@@ -8,167 +8,270 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at 0% 0%, #2c1630 0%, #120a1c 100%);
+        }
+        .ambient-glow-pink {
+            position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vh;
+            background: radial-gradient(circle, rgba(255,101,163,0.2) 0%, transparent 70%);
+            pointer-events: none; z-index: 1;
+        }
+        .ambient-glow-gold {
+            position: fixed; bottom: -10%; right: -10%; width: 50vw; height: 50vh;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            pointer-events: none; z-index: 1;
+        }
+        .page-step { display: none; width: 100%; }
+        .page-step.active { display: block !important; }
+        
+        .premium-qr-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 101, 163, 0.4);
+            padding: 20px; border-radius: 24px;
+            width: 220px; height: 220px; margin: 25px auto;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px rgba(255, 101, 163, 0.15);
+        }
+    </style>
 </head>
 <body>
-    <!-- Fullscreen Loader Overlay -->
-    <div id="loader" class="fullscreen-overlay">
+    <div class="ambient-glow-pink"></div>
+    <div class="ambient-glow-gold"></div>
+    
+    <!-- Floating Canvas STAYS ON TOP ALWAYS -->
+    <div id="partyCanvas" class="party-canvas"></div>
+
+    <!-- Core Loading Overlay for Page 4 -->
+    <div id="explosionLoader" class="fullscreen-overlay hidden">
         <div class="spinner"></div>
-        <p class="loading-text">UNLOCKING YOUR SURPRISE...</p>
+        <p class="loading-text">PREPARING PARTY EXPLOSION... 🎉</p>
     </div>
 
-    <!-- Canvas for Floating Balloons and Food -->
-    <div id="partyCanvas" class="party-canvas"></div>
-    <div class="ambient-glow"></div>
-
     <div class="wrapper">
-        <div class="glass-card animate-fade-in">
-            <p class="host-text">✨ HEADS UP! A SPECIAL GIFT INSIDE ✨</p>
+        <div class="glass-card animate-fade-in" id="mainCard">
             
-            <h1 class="personalized-title">Hello, <span id="displayName" class="receiver-name">Guest</span>! 👋</h1>
-            <p id="relationText" class="sub-text">Someone has sent you a magical virtual surprise box. Get ready for some fun!</p>
-            
-            <!-- Interactive Cake Section -->
-            <div id="cakeTrigger" class="interactive-cake">🎂</div>
-            <p style="font-size: 11px; color: #8e8e93; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">👉 Tap the cake to spawn virtual treats! 🍕🍩</p>
+            <!-- ==========================================
+                 PAGE 2 – VISITORS LANDING PAGE
+                 ========================================== -->
+            <div id="stepLanding" class="page-step active">
+                <h1 class="main-title" style="font-size: 24px; background: linear-gradient(135deg, #ff65a3, #7000ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎉 Thank You So Much <span class="receiver-name" id="p2Name">User</span> ❤️</h1>
+                <p class="sub-text" style="font-size: 15px; color: #ffffff; font-weight: 500; margin-top: 15px; margin-bottom: 5px;">Thank you for wishing me on my Birthday.</p>
+                <p class="host-text" style="font-size: 14px; color: #ffd700; margin-bottom: 30px;">Party for you by Ayan 👇</p>
+                
+                <button id="claimGiftBtn" class="btn btn-primary">🎁 Claim Your Gift</button>
+            </div>
 
-            <!-- Main Golden Trigger Button -->
-            <button id="openBoxBtn" class="btn golden-box-trigger">🎁 Open Secret Surprise Box</button>
-            
-            <p style="font-size: 12px; color: #a5a5a5; line-height: 1.4;">Tip: Tap or click on the floating balloons to pop them before they fly away! 🎈</p>
-            
-            <p class="brand-footer">Created with ❤️ by Ayan</p>
+            <!-- ==========================================
+                 PAGE 3 – PREMIUM QR PAGE
+                 ========================================== -->
+            <div id="stepQR" class="page-step">
+                <p class="host-text" style="color: #ff65a3; font-size: 15px; margin-bottom: 5px;">Scan QR To Claim Your Birthday Gift 🎁</p>
+                
+                <div class="premium-qr-container">
+                    <img id="qrImage" class="qr-image" src="" alt="Birthday Gift QR" style="width:100%; height:100%;">
+                </div>
+
+                <button id="openGiftBtn" class="btn golden-box-trigger">Open Gift</button>
+                <p class="brand-footer" style="margin-top: 25px;">Made with ❤️ by Ayan</p>
+            </div>
+
+            <!-- ==========================================
+                 PAGE 4 – BIRTHDAY PARTY EXPLOSION
+                 ========================================== -->
+            <div id="stepExplosion" class="page-step">
+                <h1 class="main-title" style="font-size: 26px; background: linear-gradient(135deg, #ffd700, #ff65a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">Congratulations <span id="p4Name" style="color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.4);">User</span>!</h1>
+                <p class="sub-text" style="color: #ffffff; font-size: 14px; font-weight: 600; margin-top: 10px; margin-bottom: 25px;">Today you received a Virtual Birthday Party from Ayan ❤️</p>
+                
+                <!-- Interactive Easter Egg Cake -->
+                <div id="easterCake" class="interactive-cake" style="font-size: 70px; margin: 5px 0; position: relative; z-index: 999999;">🎂</div>
+                <p style="font-size: 10px; color: #8e8e93; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px;">(Tap the cake for a melody 🎵)</p>
+
+                <!-- Certificate Section -->
+                <div class="certificate-preview-card" style="background: #fffdf6; border: 4px double #ff65a3; border-radius: 12px; padding: 20px 15px;">
+                    <div class="cert-title" style="color: #ff65a3; font-size: 12px; letter-spacing: 2px;">OFFICIAL BIRTHDAY GUEST</div>
+                    <div class="cert-sub" style="color: #555; margin: 6px 0 2px 0;">Presented To</div>
+                    <div id="certGuestName" class="cert-name" style="color: #111; font-family: 'Georgia', serif; font-size: 22px; border-bottom: 2px solid #ff65a3;">Guest</div>
+                    <div class="cert-sub" style="color: #555; margin: 8px 0 2px 0;">For Making</div>
+                    <div style="color: #7000ff; font-size: 16px; font-weight:700; margin-bottom: 5px;">Ayan Happy</div>
+                    <div class="cert-date" style="color: #aa7700; font-size: 12px; margin-top: 10px; font-weight: 800;">25 July 🗓️</div>
+                </div>
+
+                <button id="downloadCertBtn" class="btn btn-secondary" style="font-size: 13px;">📋 Download Birthday Guest Certificate</button>
+            </div>
+
+            <p class="brand-footer" id="globalFooter">System Powered by Ayan</p>
         </div>
     </div>
 
-    <!-- The Magic Easter Egg Modal (Pop-up) -->
-    <div id="surpriseModal" class="easter-egg-modal hidden">
-        <div class="glass-card animate-fade-in" style="max-width: 360px; background: rgba(20, 15, 38, 0.95); border: 1px solid rgba(255, 215, 0, 0.3);">
-            <h2 class="main-title" style="background: linear-gradient(135deg, #ffd700, #ff9500); -webkit-background-clip: text;">🎉 SURPRISE UNLOCKED!</h2>
-            
-            <p id="popupMessage" class="msg-highlight">You are incredibly special! Thanks for always being there as an awesome connection in my life.</p>
-            
-            <!-- Dynamic Friendship/Respect Certificate Inside Pop-up -->
-            <div class="certificate-preview-card">
-                <div class="cert-title">CERTIFICATE OF APPRECIATION</div>
-                <div class="cert-sub">This honor is proudly presented to</div>
-                <div id="certName" class="cert-name">Awesome Human</div>
-                <div id="certDesc" class="cert-desc">For being the most amazing friend, supporting every crazy plan, and bringing pure joy into the journey of life.</div>
-                <div class="cert-date">Issued by Ayan | Official Record 📜</div>
-            </div>
-
-            <button id="closeModalBtn" class="btn btn-secondary">Close & Keep Popping 🎈</button>
+    <!-- Easter Egg Golden Gift Box Modal -->
+    <div id="goldenBoxModal" class="easter-egg-modal hidden">
+        <div class="glass-card animate-fade-in" style="max-width: 340px; border: 2px solid #ffd700; background: rgba(18, 10, 28, 0.98);">
+            <div style="font-size: 50px; margin-bottom: 10px;">👑</div>
+            <h3 style="color: #ffd700; font-size: 20px; margin-bottom: 15px; font-weight: 800;">GOLDEN BOX MEMORY</h3>
+            <p style="color: #ffffff; font-size: 15px; line-height: 1.6; font-weight: 500;">
+                You are one of the special people who made my birthday memorable. ❤️
+            </p>
+            <button id="closeGoldenBtn" class="btn btn-secondary" style="margin-top: 20px; padding: 12px;">Close Box</button>
         </div>
     </div>
 
     <script>
-        // Extract parameters from URL securely
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawName = urlParams.get('name') || 'Special Guest';
-        const rawRel = urlParams.get('rel') || 'Friend';
+        // Native High-Response Audio Engine
+        const popSound = new Audio('pop.mp3');
+        const cheerSound = new Audio('cheer.mp3');
+        const hbdSound = new Audio('hbd.mp3');
+        
+        popSound.preload = 'auto';
+        cheerSound.preload = 'auto';
+        hbdSound.preload = 'auto';
 
-        // Clean names from any rogue script tags or ugly symbols
-        const guestName = rawName.replace(/[^a-zA-Z0-9 ]/g, "");
-        const guestRel = rawRel.replace(/[^a-zA-Z0-9 ]/g, "");
+        function playPop() { try { popSound.currentTime = 0; popSound.play().catch(e=>{}); } catch(e){} }
+        function playCheer() { try { cheerSound.currentTime = 0; cheerSound.play().catch(e=>{}); } catch(e){} }
+        function playHBD() { try { hbdSound.currentTime = 0; hbdSound.play().catch(e=>{}); } catch(e){} }
 
-        // Initialize UI Elements with URL Data
-        document.getElementById('displayName').textContent = guestName;
-        document.getElementById('certName').textContent = guestName;
-
-        // Custom UI Text & Certificate Content based on relation type
-        const relTextElement = document.getElementById('relationText');
-        const popupMsgElement = document.getElementById('popupMessage');
-        const certDescElement = document.getElementById('certDesc');
-
-        if (guestRel === 'Dada' || guestRel === 'Didi') {
-            relTextElement.textContent = `Ayan sent this dedicated surprise to his awesome ${guestRel}! Check it out below.`;
-            popupMsgElement.textContent = `Respect & Love to my dearest ${guestRel}! You are a true guide, a core supporter, and absolutely irreplaceable.`;
-            certDescElement.textContent = `For being an exceptional guide, a rock-solid support system, and tolerating all of Ayan's wild antics with endless patience.`;
-        } else if (guestRel === 'Kaka' || guestRel === 'Kaki' || guestRel === 'Respect') {
-            relTextElement.textContent = `Greetings! Ayan has crafted a respectful virtual surprise token especially for you.`;
-            popupMsgElement.textContent = `Thank you so much for your immense kindness, valuable wisdom, and constant encouragement in my life.`;
-            certDescElement.textContent = `Presented with highest regards for offering priceless guidance, true inspiration, and deep benevolence throughout the years.`;
-        } else {
-            // Default Friend Mode
-            relTextElement.textContent = `Your crazy friend Ayan has sent you this exclusive web package. Dive into the chaos!`;
-            popupMsgElement.textContent = `Yo bro! You are an absolute legend. Life would be insanely boring without a chaotic criminal partner like you! 🔥`;
-            certDescElement.textContent = `For being a certified elite friend, keeping secrets safe, and matching the exact level of madness needed to survive this crazy world.`;
-        }
-
-        // Hide Loader Overlay after short dramatic pause
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                loader.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => loader.classList.add('hidden'), 500);
-            }, 1800);
+        // FIX 2: Automatically chain HBD music right after the Cheer music ends
+        cheerSound.addEventListener('ended', () => {
+            playHBD();
         });
 
-        // Dynamic System for Generating Floating Balloons
-        const canvas = document.getElementById('partyCanvas');
-        const balloonColors = ['#ff65a3', '#7000ff', '#ffd700', '#34c759', '#ff453a', '#007aff', '#ff9500'];
+        // Extract Parameter Data Safely
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = (urlParams.get('name') || 'Guest').replace(/[^a-zA-Z0-9 ]/g, "");
+        
+        document.getElementById('p2Name').textContent = guestName;
+        document.getElementById('p4Name').textContent = guestName;
+        document.getElementById('certGuestName').textContent = guestName;
 
+        // Dynamic QR Code Setup
+        const currentUrl = window.location.href;
+        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff65a3&bgcolor=ffffff&data=${encodeURIComponent(currentUrl + "&autostep=4")}`;
+
+        const stepLanding = document.getElementById('stepLanding');
+        const stepQR = document.getElementById('stepQR');
+        const stepExplosion = document.getElementById('stepExplosion');
+        const globalFooter = document.getElementById('globalFooter');
+
+        // Auto Step Scan Bypass Detection
+        if(urlParams.get('autostep') === '4') {
+            switchStep(stepExplosion);
+            triggerPartyExplosion();
+        }
+
+        document.getElementById('claimGiftBtn').addEventListener('click', () => {
+            switchStep(stepQR);
+            globalFooter.classList.add('hidden');
+        });
+
+        document.getElementById('openGiftBtn').addEventListener('click', () => {
+            const loader = document.getElementById('explosionLoader');
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                switchStep(stepExplosion);
+                triggerPartyExplosion();
+            }, 1200);
+        });
+
+        function switchStep(targetStep) {
+            document.querySelectorAll('.page-step').forEach(el => el.classList.remove('active'));
+            targetStep.classList.add('active');
+        }
+
+        // ==========================================
+        // PAGE 4 ACTIVE ENGINE: BALLOONS & BUBBLES
+        // ==========================================
+        const canvas = document.getElementById('partyCanvas');
+
+        function triggerPartyExplosion() {
+            playCheer(); // Instant Popper & "Yeehh!!" sound
+            
+            // Continuous spawning system
+            setInterval(() => {
+                spawnBalloon();
+                if(Math.random() > 0.3) spawnFoodBubble();
+            }, 500);
+        }
+
+        const balloonColors = ['#ff65a3', '#7000ff', '#ffd700', '#34c759', '#ff453a'];
         function spawnBalloon() {
             const balloon = document.createElement('div');
             balloon.classList.add('interactive-balloon');
             
-            // Randomize visual states
-            const randomColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
-            balloon.style.background = randomColor;
-            balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 20px ${randomColor}44`;
+            // FIX 1: Add centered 'tap' text directly inside the balloon element
+            balloon.textContent = 'tap';
+            balloon.style.display = 'flex';
+            balloon.style.justifyContent = 'center';
+            balloon.style.alignItems = 'center';
+            balloon.style.color = '#ffffff';
+            balloon.style.fontSize = '12px';
+            balloon.style.fontWeight = '800';
+            balloon.style.textTransform = 'uppercase';
+            balloon.style.letterSpacing = '0.5px';
+            
+            const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            balloon.style.background = color;
+            balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 25px ${color}55`;
             balloon.style.left = Math.random() * 85 + 'vw';
             
-            // Randomize movement speeds
-            const duration = Math.random() * 5 + 6; // between 6s and 11s
+            const duration = Math.random() * 3 + 4; 
             balloon.style.animationDuration = duration + 's';
             
-            // Handle clicking / popping behavior
-            balloon.addEventListener('click', function() {
-                // Quick particle effect simulation on deletion
-                this.style.transform = 'scale(1.4)';
-                this.style.opacity = '0';
-                this.style.transition = 'all 0.1s ease-out';
-                setTimeout(() => this.remove(), 100);
-            });
+            function popEvent(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                playPop(); 
+                balloon.style.transform = 'scale(0)';
+                balloon.style.opacity = '0';
+                setTimeout(() => balloon.remove(), 80);
+            }
+            balloon.addEventListener('touchstart', popEvent, {passive: false});
+            balloon.addEventListener('click', popEvent);
 
             canvas.appendChild(balloon);
-
-            // Clean up elements that pass the screen boundaries to prevent memory leaks
-            setTimeout(() => {
-                if(balloon.parentNode) balloon.remove();
-            }, duration * 1000);
+            setTimeout(() => { if(balloon.parentNode) balloon.remove(); }, duration * 1000);
         }
 
-        // Trigger continuous balloon generation
-        setInterval(spawnBalloon, 900);
+        const foodItems = ['🍕', '🍔', '🍟', '🌯', '🥟', '🍜', '🍦', '🍰', '🎂', '🍫', '🥤'];
+        function spawnFoodBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble-item');
+            bubble.textContent = foodItems[Math.floor(Math.random() * foodItems.length)];
+            bubble.style.left = Math.random() * 85 + 'vw';
+            
+            const duration = Math.random() * 3 + 4;
+            bubble.style.animationDuration = duration + 's';
+            bubble.style.fontSize = Math.random() * 10 + 30 + 'px';
 
-        // Spawn Floating Food Emojis when Cake is Tapped
-        const foodEmojis = ['🍔', '🍕', '🍰', '🍩', '🍦', '🍿', '🍟', '🍫', '🍪', '🥤'];
-        document.getElementById('cakeTrigger').addEventListener('click', () => {
-            for (let i = 0; i < 6; i++) {
-                setTimeout(() => {
-                    const food = document.createElement('div');
-                    food.classList.add('bubble-item');
-                    food.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
-                    food.style.left = (Math.random() * 60 + 20) + 'vw';
-                    
-                    const duration = Math.random() * 3 + 3; // 3s to 6s
-                    food.style.animationDuration = duration + 's';
-                    food.style.fontSize = (Math.random() * 15 + 25) + 'px';
+            canvas.appendChild(bubble);
+            setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, duration * 1000);
+        }
 
-                    canvas.appendChild(food);
-                    setTimeout(() => { if(food.parentNode) food.remove(); }, duration * 1000);
-                }, i * 150);
+        // ==========================================
+        // EASTER EGGS SYSTEMS
+        // ==========================================
+        document.getElementById('easterCake').addEventListener('click', () => {
+            playHBD();
+        });
+
+        let cardTapCount = 0;
+        document.getElementById('mainCard').addEventListener('click', (e) => {
+            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('interactive-cake')) return;
+            
+            cardTapCount++;
+            if(cardTapCount === 5) {
+                document.getElementById('goldenBoxModal').classList.remove('hidden');
+                cardTapCount = 0;
             }
         });
 
-        // Modal Pop-up Interactivity Controls
-        const modal = document.getElementById('surpriseModal');
-        document.getElementById('openBoxBtn').addEventListener('click', () => {
-            modal.classList.remove('hidden');
+        document.getElementById('closeGoldenBtn').addEventListener('click', () => {
+            document.getElementById('goldenBoxModal').classList.add('hidden');
         });
-        document.getElementById('closeModalBtn').addEventListener('click', () => {
-            modal.classList.add('hidden');
+
+        document.getElementById('downloadCertBtn').addEventListener('click', () => {
+            window.print();
         });
     </script>
 </body>
