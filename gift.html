@@ -117,13 +117,10 @@
     </div>
 
     <script>
-        // Extract Parameter Data Safely
         const urlParams = new URLSearchParams(window.location.search);
         const guestName = (urlParams.get('name') || 'Guest').replace(/[^a-zA-Z0-9 ]/g, "");
 
-        // ==========================================
-        // NEW UPDATE: ONE-TIME LINK SECURITY GUARD
-        // ==========================================
+        // ONE-TIME LINK SECURITY GUARD
         if (localStorage.getItem('gift_claimed_' + guestName)) {
             document.body.innerHTML = `
                 <div class="ambient-glow-pink"></div>
@@ -142,7 +139,6 @@
                 </div>
             `;
         } else {
-            // ALL ORIGINAL LOGIC CONTINUES UNTOUCHED INSIDE THE SAFE BLOCK
             const popSound = new Audio('pop.mp3');
             const cheerSound = new Audio('cheer.mp3');
             const hbdSound = new Audio('hbd.mp3');
@@ -155,7 +151,6 @@
             function playCheer() { try { cheerSound.currentTime = 0; cheerSound.play().catch(e=>{}); } catch(e){} }
             function playHBD() { try { hbdSound.currentTime = 0; hbdSound.play().catch(e=>{}); } catch(e){} }
 
-            // Chain HBD music right after the Cheer music ends
             cheerSound.addEventListener('ended', () => {
                 playHBD();
             });
@@ -164,7 +159,6 @@
             document.getElementById('p4Name').textContent = guestName;
             document.getElementById('certGuestName').textContent = guestName;
 
-            // Dynamic QR Code Setup
             const currentUrl = window.location.href;
             document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff65a3&bgcolor=ffffff&data=${encodeURIComponent(currentUrl + "&autostep=4")}`;
 
@@ -173,7 +167,6 @@
             const stepExplosion = document.getElementById('stepExplosion');
             const globalFooter = document.getElementById('globalFooter');
 
-            // Auto Step Scan Bypass Detection
             if(urlParams.get('autostep') === '4') {
                 switchStep(stepExplosion);
                 triggerPartyExplosion();
@@ -200,13 +193,10 @@
                 targetStep.classList.add('active');
             }
 
-            // PAGE 4 ACTIVE ENGINE: BALLOONS & BUBBLES
             const canvas = document.getElementById('partyCanvas');
 
             function triggerPartyExplosion() {
-                // LOCK THE LINK IMMEDIATELY WHEN THEY OFFICIALY SEE THE SURPRISE
                 localStorage.setItem('gift_claimed_' + guestName, 'true');
-                
                 playCheer(); 
                 
                 setInterval(() => {
@@ -225,7 +215,14 @@
                 balloon.style.justifyContent = 'center';
                 balloon.style.alignItems = 'center';
                 balloon.style.color = '#ffffff';
-                balloon.style.fontSize = '12px';
+                
+                // 🔥 জাবদা জাবদা বেলুন সাইজ (125px থেকে 165px চওড়া!)
+                const balloonWidth = Math.random() * 40 + 125; 
+                balloon.style.width = balloonWidth + 'px';
+                balloon.style.height = (balloonWidth * 1.3) + 'px'; 
+                balloon.style.borderRadius = '50% 50% 50% 50% / 40% 40% 60% 60%';
+                
+                balloon.style.fontSize = '18px'; // বড় লেখা
                 balloon.style.fontWeight = '800';
                 balloon.style.textTransform = 'uppercase';
                 balloon.style.letterSpacing = '0.5px';
@@ -233,7 +230,9 @@
                 const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
                 balloon.style.background = color;
                 balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 25px ${color}55`;
-                balloon.style.left = Math.random() * 85 + 'vw';
+                
+                // স্ক্রিনের বাইরে যাতে না যায়, তাই সেফ জোন (max 65vw)
+                balloon.style.left = Math.random() * 65 + 'vw';
                 
                 const duration = Math.random() * 3 + 4; 
                 balloon.style.animationDuration = duration + 's';
@@ -253,16 +252,23 @@
                 setTimeout(() => { if(balloon.parentNode) balloon.remove(); }, duration * 1000);
             }
 
-            const foodItems = ['🍕', '🍔', '🍟', '🌯', '🥟', '🍜', '🍦', '🍰', '🎂', '🍫', '🥤'];
+            const foodImages = ['pizza.png', 'burger.png', 'fries.png', 'roll.png', 'momo.png', 'noodles.png', 'icecream.png', 'cake.png', 'bdaycake.png', 'chocolate.png', 'drink.png'];
+            
             function spawnFoodBubble() {
-                const bubble = document.createElement('div');
+                const bubble = document.createElement('img'); 
                 bubble.classList.add('bubble-item');
-                bubble.textContent = foodItems[Math.floor(Math.random() * foodItems.length)];
-                bubble.style.left = Math.random() * 85 + 'vw';
+                bubble.src = foodImages[Math.floor(Math.random() * foodImages.length)];
+                
+                // স্ক্রিনের বাইরে যাতে না যায়, তাই সেফ জোন (max 60vw)
+                bubble.style.left = Math.random() * 60 + 'vw';
                 
                 const duration = Math.random() * 3 + 4;
                 bubble.style.animationDuration = duration + 's';
-                bubble.style.fontSize = Math.random() * 10 + 30 + 'px';
+                
+                // 🔥 জাবদা জাবদা খাবারের সাইজ (140px থেকে 190px বড় বড় ছবি!)
+                const size = Math.random() * 50 + 140; 
+                bubble.style.width = size + 'px';
+                bubble.style.height = 'auto';
 
                 canvas.appendChild(bubble);
                 setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, duration * 1000);
