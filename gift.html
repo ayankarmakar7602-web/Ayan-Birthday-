@@ -117,162 +117,181 @@
     </div>
 
     <script>
-        // Native High-Response Audio Engine
-        const popSound = new Audio('pop.mp3');
-        const cheerSound = new Audio('cheer.mp3');
-        const hbdSound = new Audio('hbd.mp3');
-        
-        popSound.preload = 'auto';
-        cheerSound.preload = 'auto';
-        hbdSound.preload = 'auto';
-
-        function playPop() { try { popSound.currentTime = 0; popSound.play().catch(e=>{}); } catch(e){} }
-        function playCheer() { try { cheerSound.currentTime = 0; cheerSound.play().catch(e=>{}); } catch(e){} }
-        function playHBD() { try { hbdSound.currentTime = 0; hbdSound.play().catch(e=>{}); } catch(e){} }
-
-        // FIX 2: Automatically chain HBD music right after the Cheer music ends
-        cheerSound.addEventListener('ended', () => {
-            playHBD();
-        });
-
         // Extract Parameter Data Safely
         const urlParams = new URLSearchParams(window.location.search);
         const guestName = (urlParams.get('name') || 'Guest').replace(/[^a-zA-Z0-9 ]/g, "");
-        
-        document.getElementById('p2Name').textContent = guestName;
-        document.getElementById('p4Name').textContent = guestName;
-        document.getElementById('certGuestName').textContent = guestName;
 
-        // Dynamic QR Code Setup
-        const currentUrl = window.location.href;
-        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff65a3&bgcolor=ffffff&data=${encodeURIComponent(currentUrl + "&autostep=4")}`;
-
-        const stepLanding = document.getElementById('stepLanding');
-        const stepQR = document.getElementById('stepQR');
-        const stepExplosion = document.getElementById('stepExplosion');
-        const globalFooter = document.getElementById('globalFooter');
-
-        // Auto Step Scan Bypass Detection
-        if(urlParams.get('autostep') === '4') {
-            switchStep(stepExplosion);
-            triggerPartyExplosion();
-        }
-
-        document.getElementById('claimGiftBtn').addEventListener('click', () => {
-            switchStep(stepQR);
-            globalFooter.classList.add('hidden');
-        });
-
-        document.getElementById('openGiftBtn').addEventListener('click', () => {
-            const loader = document.getElementById('explosionLoader');
-            loader.classList.remove('hidden');
+        // ==========================================
+        // NEW UPDATE: ONE-TIME LINK SECURITY GUARD
+        // ==========================================
+        if (localStorage.getItem('gift_claimed_' + guestName)) {
+            document.body.innerHTML = `
+                <div class="ambient-glow-pink"></div>
+                <div class="ambient-glow-gold"></div>
+                <div class="wrapper" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+                    <div class="glass-card animate-fade-in" style="padding: 45px 25px; border: 1px solid rgba(255, 101, 163, 0.2);">
+                        <div style="font-size: 55px; margin-bottom: 20px;">🔒</div>
+                        <h2 style="color: #ff65a3; font-size: 17px; font-weight: 700; line-height: 1.6; margin-bottom: 10px; padding: 0 10px;">
+                            Sorry, you have only Claimed a gift once.
+                        </h2>
+                        <p style="color: #b3b3b3; font-size: 14px; font-weight: 500;">
+                            Better things await you next year.
+                        </p>
+                        <p class="brand-footer" style="margin-top: 35px;">System Powered by Ayan</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            // ALL ORIGINAL LOGIC CONTINUES UNTOUCHED INSIDE THE SAFE BLOCK
+            const popSound = new Audio('pop.mp3');
+            const cheerSound = new Audio('cheer.mp3');
+            const hbdSound = new Audio('hbd.mp3');
             
-            setTimeout(() => {
-                loader.classList.add('hidden');
+            popSound.preload = 'auto';
+            cheerSound.preload = 'auto';
+            hbdSound.preload = 'auto';
+
+            function playPop() { try { popSound.currentTime = 0; popSound.play().catch(e=>{}); } catch(e){} }
+            function playCheer() { try { cheerSound.currentTime = 0; cheerSound.play().catch(e=>{}); } catch(e){} }
+            function playHBD() { try { hbdSound.currentTime = 0; hbdSound.play().catch(e=>{}); } catch(e){} }
+
+            // Chain HBD music right after the Cheer music ends
+            cheerSound.addEventListener('ended', () => {
+                playHBD();
+            });
+            
+            document.getElementById('p2Name').textContent = guestName;
+            document.getElementById('p4Name').textContent = guestName;
+            document.getElementById('certGuestName').textContent = guestName;
+
+            // Dynamic QR Code Setup
+            const currentUrl = window.location.href;
+            document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff65a3&bgcolor=ffffff&data=${encodeURIComponent(currentUrl + "&autostep=4")}`;
+
+            const stepLanding = document.getElementById('stepLanding');
+            const stepQR = document.getElementById('stepQR');
+            const stepExplosion = document.getElementById('stepExplosion');
+            const globalFooter = document.getElementById('globalFooter');
+
+            // Auto Step Scan Bypass Detection
+            if(urlParams.get('autostep') === '4') {
                 switchStep(stepExplosion);
                 triggerPartyExplosion();
-            }, 1200);
-        });
-
-        function switchStep(targetStep) {
-            document.querySelectorAll('.page-step').forEach(el => el.classList.remove('active'));
-            targetStep.classList.add('active');
-        }
-
-        // ==========================================
-        // PAGE 4 ACTIVE ENGINE: BALLOONS & BUBBLES
-        // ==========================================
-        const canvas = document.getElementById('partyCanvas');
-
-        function triggerPartyExplosion() {
-            playCheer(); // Instant Popper & "Yeehh!!" sound
-            
-            // Continuous spawning system
-            setInterval(() => {
-                spawnBalloon();
-                if(Math.random() > 0.3) spawnFoodBubble();
-            }, 500);
-        }
-
-        const balloonColors = ['#ff65a3', '#7000ff', '#ffd700', '#34c759', '#ff453a'];
-        function spawnBalloon() {
-            const balloon = document.createElement('div');
-            balloon.classList.add('interactive-balloon');
-            
-            // FIX 1: Add centered 'tap' text directly inside the balloon element
-            balloon.textContent = 'tap';
-            balloon.style.display = 'flex';
-            balloon.style.justifyContent = 'center';
-            balloon.style.alignItems = 'center';
-            balloon.style.color = '#ffffff';
-            balloon.style.fontSize = '12px';
-            balloon.style.fontWeight = '800';
-            balloon.style.textTransform = 'uppercase';
-            balloon.style.letterSpacing = '0.5px';
-            
-            const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
-            balloon.style.background = color;
-            balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 25px ${color}55`;
-            balloon.style.left = Math.random() * 85 + 'vw';
-            
-            const duration = Math.random() * 3 + 4; 
-            balloon.style.animationDuration = duration + 's';
-            
-            function popEvent(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                playPop(); 
-                balloon.style.transform = 'scale(0)';
-                balloon.style.opacity = '0';
-                setTimeout(() => balloon.remove(), 80);
             }
-            balloon.addEventListener('touchstart', popEvent, {passive: false});
-            balloon.addEventListener('click', popEvent);
 
-            canvas.appendChild(balloon);
-            setTimeout(() => { if(balloon.parentNode) balloon.remove(); }, duration * 1000);
-        }
+            document.getElementById('claimGiftBtn').addEventListener('click', () => {
+                switchStep(stepQR);
+                globalFooter.classList.add('hidden');
+            });
 
-        const foodItems = ['🍕', '🍔', '🍟', '🌯', '🥟', '🍜', '🍦', '🍰', '🎂', '🍫', '🥤'];
-        function spawnFoodBubble() {
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble-item');
-            bubble.textContent = foodItems[Math.floor(Math.random() * foodItems.length)];
-            bubble.style.left = Math.random() * 85 + 'vw';
-            
-            const duration = Math.random() * 3 + 4;
-            bubble.style.animationDuration = duration + 's';
-            bubble.style.fontSize = Math.random() * 10 + 30 + 'px';
+            document.getElementById('openGiftBtn').addEventListener('click', () => {
+                const loader = document.getElementById('explosionLoader');
+                loader.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    switchStep(stepExplosion);
+                    triggerPartyExplosion();
+                }, 1200);
+            });
 
-            canvas.appendChild(bubble);
-            setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, duration * 1000);
-        }
-
-        // ==========================================
-        // EASTER EGGS SYSTEMS
-        // ==========================================
-        document.getElementById('easterCake').addEventListener('click', () => {
-            playHBD();
-        });
-
-        let cardTapCount = 0;
-        document.getElementById('mainCard').addEventListener('click', (e) => {
-            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('interactive-cake')) return;
-            
-            cardTapCount++;
-            if(cardTapCount === 5) {
-                document.getElementById('goldenBoxModal').classList.remove('hidden');
-                cardTapCount = 0;
+            function switchStep(targetStep) {
+                document.querySelectorAll('.page-step').forEach(el => el.classList.remove('active'));
+                targetStep.classList.add('active');
             }
-        });
 
-        document.getElementById('closeGoldenBtn').addEventListener('click', () => {
-            document.getElementById('goldenBoxModal').classList.add('hidden');
-        });
+            // PAGE 4 ACTIVE ENGINE: BALLOONS & BUBBLES
+            const canvas = document.getElementById('partyCanvas');
 
-        document.getElementById('downloadCertBtn').addEventListener('click', () => {
-            window.print();
-        });
+            function triggerPartyExplosion() {
+                // LOCK THE LINK IMMEDIATELY WHEN THEY OFFICIALY SEE THE SURPRISE
+                localStorage.setItem('gift_claimed_' + guestName, 'true');
+                
+                playCheer(); 
+                
+                setInterval(() => {
+                    spawnBalloon();
+                    if(Math.random() > 0.3) spawnFoodBubble();
+                }, 500);
+            }
+
+            const balloonColors = ['#ff65a3', '#7000ff', '#ffd700', '#34c759', '#ff453a'];
+            function spawnBalloon() {
+                const balloon = document.createElement('div');
+                balloon.classList.add('interactive-balloon');
+                
+                balloon.textContent = 'tap';
+                balloon.style.display = 'flex';
+                balloon.style.justifyContent = 'center';
+                balloon.style.alignItems = 'center';
+                balloon.style.color = '#ffffff';
+                balloon.style.fontSize = '12px';
+                balloon.style.fontWeight = '800';
+                balloon.style.textTransform = 'uppercase';
+                balloon.style.letterSpacing = '0.5px';
+                
+                const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+                balloon.style.background = color;
+                balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 25px ${color}55`;
+                balloon.style.left = Math.random() * 85 + 'vw';
+                
+                const duration = Math.random() * 3 + 4; 
+                balloon.style.animationDuration = duration + 's';
+                
+                function popEvent(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    playPop(); 
+                    balloon.style.transform = 'scale(0)';
+                    balloon.style.opacity = '0';
+                    setTimeout(() => balloon.remove(), 80);
+                }
+                balloon.addEventListener('touchstart', popEvent, {passive: false});
+                balloon.addEventListener('click', popEvent);
+
+                canvas.appendChild(balloon);
+                setTimeout(() => { if(balloon.parentNode) balloon.remove(); }, duration * 1000);
+            }
+
+            const foodItems = ['🍕', '🍔', '🍟', '🌯', '🥟', '🍜', '🍦', '🍰', '🎂', '🍫', '🥤'];
+            function spawnFoodBubble() {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble-item');
+                bubble.textContent = foodItems[Math.floor(Math.random() * foodItems.length)];
+                bubble.style.left = Math.random() * 85 + 'vw';
+                
+                const duration = Math.random() * 3 + 4;
+                bubble.style.animationDuration = duration + 's';
+                bubble.style.fontSize = Math.random() * 10 + 30 + 'px';
+
+                canvas.appendChild(bubble);
+                setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, duration * 1000);
+            }
+
+            // EASTER EGGS SYSTEMS
+            document.getElementById('easterCake').addEventListener('click', () => {
+                playHBD();
+            });
+
+            let cardTapCount = 0;
+            document.getElementById('mainCard').addEventListener('click', (e) => {
+                if(e.target.tagName === 'BUTTON' || e.target.classList.contains('interactive-cake')) return;
+                
+                cardTapCount++;
+                if(cardTapCount === 5) {
+                    document.getElementById('goldenBoxModal').classList.remove('hidden');
+                    cardTapCount = 0;
+                }
+            });
+
+            document.getElementById('closeGoldenBtn').addEventListener('click', () => {
+                document.getElementById('goldenBoxModal').classList.add('hidden');
+            });
+
+            document.getElementById('downloadCertBtn').addEventListener('click', () => {
+                window.print();
+            });
+        }
     </script>
 </body>
 </html>
