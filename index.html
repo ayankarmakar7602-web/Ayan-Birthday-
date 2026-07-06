@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayan's Surprise Link Generator 🪄</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ambient-glow"></div>
+    
+    <div class="wrapper">
+        <div class="glass-card animate-fade-in">
+            <h1 class="main-title">Ayan's Link Generator 🎁</h1>
+            <p class="sub-text">Enter your friend's name and select your relation to generate their exclusive surprise gift link.</p>
+            
+            <form id="welcomeForm" class="setup-form">
+                <div class="input-group">
+                    <label for="guestName">Friend's Name</label>
+                    <input type="text" id="guestName" placeholder="Type friend's name..." required autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label for="guestRel">Relation with Ayan</label>
+                    <select id="guestRel" required>
+                        <option value="Friend">Friend / Brother</option>
+                        <option value="Dada">Elder Brother (Dada)</option>
+                        <option value="Didi">Elder Sister (Didi)</option>
+                        <option value="Kaka">Uncle (Kaka)</option>
+                        <option value="Kaki">Aunt (Kaki)</option>
+                        <option value="Respect">Respected Guest</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">✨ Generate Magic Link</button>
+            </form>
+
+            <!-- This section appears automatically after link generation -->
+            <div id="resultSection" class="hidden" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p class="host-text" style="font-size: 13px; margin-bottom: 10px;">👇 Your link is ready! Copy and send it to them:</p>
+                <input type="text" id="generatedUrl" readonly style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #ff65a3; padding: 12px; border-radius: 10px; color: #fff; font-size: 13px; text-align: center; margin-bottom: 12px;">
+                <button id="copyBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #7000ff, #ff65a3);">📋 Copy Magic Link</button>
+            </div>
+            
+            <p class="brand-footer">System Powered by Ayan</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('welcomeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('guestName').value.trim();
+            const rel = document.getElementById('guestRel').value;
+            
+            if(name) {
+                // Cleans special characters from name
+                const cleanName = name.replace(/[^a-zA-Z0-9 ]/g, "");
+                
+                // Automatically tracks the current directory path to create the gift.html link
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+                const generatedLink = `${baseUrl}/gift.html?name=${encodeURIComponent(cleanName)}&rel=${encodeURIComponent(rel)}`;
+                
+                // Sets the link in the input box and shows the result container
+                document.getElementById('generatedUrl').value = generatedLink;
+                document.getElementById('resultSection').classList.remove('hidden');
+            }
+        });
+
+        // Copy Link Button Action
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const copyText = document.getElementById('generatedUrl');
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // Mobile compatibility fallback
+            
+            try {
+                navigator.clipboard.writeText(copyText.value);
+                this.textContent = "✅ Link Copied!";
+                this.style.background = "#34c759";
+            } catch (err) {
+                document.execCommand('copy');
+                this.textContent = "✅ Link Copied!";
+                this.style.background = "#34c759";
+            }
+            
+            setTimeout(() => {
+                this.textContent = "📋 Copy Magic Link";
+                this.style.background = "";
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise For You! 🎁</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Fullscreen Loader Overlay -->
+    <div id="loader" class="fullscreen-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">UNLOCKING YOUR SURPRISE...</p>
+    </div>
+
+    <!-- Canvas for Floating Balloons and Food -->
+    <div id="partyCanvas" class="party-canvas"></div>
+    <div class="ambient-glow"></div>
+
+    <div class="wrapper">
+        <div class="glass-card animate-fade-in">
+            <p class="host-text">✨ HEADS UP! A SPECIAL GIFT INSIDE ✨</p>
+            
+            <h1 class="personalized-title">Hello, <span id="displayName" class="receiver-name">Guest</span>! 👋</h1>
+            <p id="relationText" class="sub-text">Someone has sent you a magical virtual surprise box. Get ready for some fun!</p>
+            
+            <!-- Interactive Cake Section -->
+            <div id="cakeTrigger" class="interactive-cake">🎂</div>
+            <p style="font-size: 11px; color: #8e8e93; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">👉 Tap the cake to spawn virtual treats! 🍕🍩</p>
+
+            <!-- Main Golden Trigger Button -->
+            <button id="openBoxBtn" class="btn golden-box-trigger">🎁 Open Secret Surprise Box</button>
+            
+            <p style="font-size: 12px; color: #a5a5a5; line-height: 1.4;">Tip: Tap or click on the floating balloons to pop them before they fly away! 🎈</p>
+            
+            <p class="brand-footer">Created with ❤️ by Ayan</p>
+        </div>
+    </div>
+
+    <!-- The Magic Easter Egg Modal (Pop-up) -->
+    <div id="surpriseModal" class="easter-egg-modal hidden">
+        <div class="glass-card animate-fade-in" style="max-width: 360px; background: rgba(20, 15, 38, 0.95); border: 1px solid rgba(255, 215, 0, 0.3);">
+            <h2 class="main-title" style="background: linear-gradient(135deg, #ffd700, #ff9500); -webkit-background-clip: text;">🎉 SURPRISE UNLOCKED!</h2>
+            
+            <p id="popupMessage" class="msg-highlight">You are incredibly special! Thanks for always being there as an awesome connection in my life.</p>
+            
+            <!-- Dynamic Friendship/Respect Certificate Inside Pop-up -->
+            <div class="certificate-preview-card">
+                <div class="cert-title">CERTIFICATE OF APPRECIATION</div>
+                <div class="cert-sub">This honor is proudly presented to</div>
+                <div id="certName" class="cert-name">Awesome Human</div>
+                <div id="certDesc" class="cert-desc">For being the most amazing friend, supporting every crazy plan, and bringing pure joy into the journey of life.</div>
+                <div class="cert-date">Issued by Ayan | Official Record 📜</div>
+            </div>
+
+            <button id="closeModalBtn" class="btn btn-secondary">Close & Keep Popping 🎈</button>
+        </div>
+    </div>
+
+    <script>
+        // Extract parameters from URL securely
+        const urlParams = new URLSearchParams(window.location.search);
+        const rawName = urlParams.get('name') || 'Special Guest';
+        const rawRel = urlParams.get('rel') || 'Friend';
+
+        // Clean names from any rogue script tags or ugly symbols
+        const guestName = rawName.replace(/[^a-zA-Z0-9 ]/g, "");
+        const guestRel = rawRel.replace(/[^a-zA-Z0-9 ]/g, "");
+
+        // Initialize UI Elements with URL Data
+        document.getElementById('displayName').textContent = guestName;
+        document.getElementById('certName').textContent = guestName;
+
+        // Custom UI Text & Certificate Content based on relation type
+        const relTextElement = document.getElementById('relationText');
+        const popupMsgElement = document.getElementById('popupMessage');
+        const certDescElement = document.getElementById('certDesc');
+
+        if (guestRel === 'Dada' || guestRel === 'Didi') {
+            relTextElement.textContent = `Ayan sent this dedicated surprise to his awesome ${guestRel}! Check it out below.`;
+            popupMsgElement.textContent = `Respect & Love to my dearest ${guestRel}! You are a true guide, a core supporter, and absolutely irreplaceable.`;
+            certDescElement.textContent = `For being an exceptional guide, a rock-solid support system, and tolerating all of Ayan's wild antics with endless patience.`;
+        } else if (guestRel === 'Kaka' || guestRel === 'Kaki' || guestRel === 'Respect') {
+            relTextElement.textContent = `Greetings! Ayan has crafted a respectful virtual surprise token especially for you.`;
+            popupMsgElement.textContent = `Thank you so much for your immense kindness, valuable wisdom, and constant encouragement in my life.`;
+            certDescElement.textContent = `Presented with highest regards for offering priceless guidance, true inspiration, and deep benevolence throughout the years.`;
+        } else {
+            // Default Friend Mode
+            relTextElement.textContent = `Your crazy friend Ayan has sent you this exclusive web package. Dive into the chaos!`;
+            popupMsgElement.textContent = `Yo bro! You are an absolute legend. Life would be insanely boring without a chaotic criminal partner like you! 🔥`;
+            certDescElement.textContent = `For being a certified elite friend, keeping secrets safe, and matching the exact level of madness needed to survive this crazy world.`;
+        }
+
+        // Hide Loader Overlay after short dramatic pause
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                loader.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }, 1800);
+        });
+
+        // Dynamic System for Generating Floating Balloons
+        const canvas = document.getElementById('partyCanvas');
+        const balloonColors = ['#ff65a3', '#7000ff', '#ffd700', '#34c759', '#ff453a', '#007aff', '#ff9500'];
+
+        function spawnBalloon() {
+            const balloon = document.createElement('div');
+            balloon.classList.add('interactive-balloon');
+            
+            // Randomize visual states
+            const randomColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            balloon.style.background = randomColor;
+            balloon.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 20px ${randomColor}44`;
+            balloon.style.left = Math.random() * 85 + 'vw';
+            
+            // Randomize movement speeds
+            const duration = Math.random() * 5 + 6; // between 6s and 11s
+            balloon.style.animationDuration = duration + 's';
+            
+            // Handle clicking / popping behavior
+            balloon.addEventListener('click', function() {
+                // Quick particle effect simulation on deletion
+                this.style.transform = 'scale(1.4)';
+                this.style.opacity = '0';
+                this.style.transition = 'all 0.1s ease-out';
+                setTimeout(() => this.remove(), 100);
+            });
+
+            canvas.appendChild(balloon);
+
+            // Clean up elements that pass the screen boundaries to prevent memory leaks
+            setTimeout(() => {
+                if(balloon.parentNode) balloon.remove();
+            }, duration * 1000);
+        }
+
+        // Trigger continuous balloon generation
+        setInterval(spawnBalloon, 900);
+
+        // Spawn Floating Food Emojis when Cake is Tapped
+        const foodEmojis = ['🍔', '🍕', '🍰', '🍩', '🍦', '🍿', '🍟', '🍫', '🍪', '🥤'];
+        document.getElementById('cakeTrigger').addEventListener('click', () => {
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const food = document.createElement('div');
+                    food.classList.add('bubble-item');
+                    food.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+                    food.style.left = (Math.random() * 60 + 20) + 'vw';
+                    
+                    const duration = Math.random() * 3 + 3; // 3s to 6s
+                    food.style.animationDuration = duration + 's';
+                    food.style.fontSize = (Math.random() * 15 + 25) + 'px';
+
+                    canvas.appendChild(food);
+                    setTimeout(() => { if(food.parentNode) food.remove(); }, duration * 1000);
+                }, i * 150);
+            }
+        });
+
+        // Modal Pop-up Interactivity Controls
+        const modal = document.getElementById('surpriseModal');
+        document.getElementById('openBoxBtn').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
